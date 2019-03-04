@@ -228,6 +228,8 @@ public class DAOImpl implements DAO{
 			else{
 				Session session=HibernateUtil.getNewSession();
 				UserBean bean=(UserBean) session.get(UserBean.class, userId);
+				if(bean==null)
+					throw new KvpalException(ApplicationEnum.USER_NOT_EXISTS);
 				bean.setIsActive(!bean.getIsActive());
 				Transaction transaction=session.beginTransaction();
 				session.update(bean);
