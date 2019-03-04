@@ -30,7 +30,7 @@ public class Encryption {
     public static void main(final String [] args) {
         System.out.println("Running");
         final Encryption e = new Encryption();
-        String o [] = e.encrypt("MyData=1");
+        String o [] = e.encrypt("test123");
         System.out.println("Encrypted Data : " + o[0]);
         System.out.println(o[1]);          
         // Now decrypt the string
@@ -43,7 +43,8 @@ public class Encryption {
     public String decrypt(String encryptedData){
     	 final Encrypter dencrypter = new Encrypter("DESede", ENCRYPTION_KEY);
          final String decryptedData = dencrypter.decrypt(encryptedData);
-         return decryptedData;
+         String[] dec=decryptedData.split("\\[(.*?)\\]");
+         return dec[0];
     }
     public String [] encrypt(final String plainText) {        
         try {            

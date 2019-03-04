@@ -14,6 +14,7 @@ import com.bikram.dao.DAO;
 import com.bikram.dao.DAOImpl;
 import com.bikram.dao.beans.RoleBean;
 import com.bikram.dao.beans.UserBean;
+import com.bikram.exception.KvpalException;
 
 @Component
 @ConfigurationProperties
@@ -48,6 +49,10 @@ public class CreateDefaults {
 	}
 	
 	public void CreateAdminUser() {
+		Session session=HibernateUtil.getNewSession();
+		Criteria criteria=session.createCriteria(UserBean.class);
+		criteria.add(Restrictions.eq("email", "kvpal@gmail.com"));
+		if(criteria.list().size()<=0){
 		DAO dao=new DAOImpl();
 		RoleBean role=dao.getRoleById(1);
 		UserBean bean=new UserBean();
@@ -64,6 +69,12 @@ public class CreateDefaults {
 		bean.setPassout_year(2000);
 		bean.setPassword(encryption.encrypt("test@123")[0]);
 		bean.setRegistration_date(new Date());
-		dao.createUser(bean);
+		try {
+			dao.createUser(bean);
+		} catch (KvpalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 	}
 }

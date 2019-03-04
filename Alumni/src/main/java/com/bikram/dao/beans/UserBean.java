@@ -9,6 +9,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "user_table")
@@ -21,16 +26,35 @@ public class UserBean {
 	private String mobile;
 	private String email;
 	private String password;
+	@Column(columnDefinition="TEXT")
 	private String imageLocation;
 	private Date registration_date;
+	@Column(nullable = false)
+	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private Boolean isActive;
 	private int passout_year;
 	@Column(name="class")
 	private String batch;
 	private String gender;
 	private String address;
+	@Column(columnDefinition="TEXT")
 	private String alumniBadge;
 	private Date lastLogin;
+	private String sso;
+	private String uid;
+	
+	public String getUid() {
+		return uid;
+	}
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	public String getSso() {
+		return sso;
+	}
+	public void setSso(String sso) {
+		this.sso = sso;
+	}
 	@OneToOne
 	private RoleBean role;
 	public int getId() {
