@@ -64,6 +64,7 @@ public class DAOImpl implements DAO{
 		session.save(bean);
 		transaction.commit();
 		session.close();
+		if(bean.getRole().getId()!=1)
 		emailclient.send(bean.getEmail(),SUBJECT, emailBodyGenerator.generateEmailBody(bean.getFirstName(), ApplicationEnum.REG_SUCCESS.getMessage()+" and "+ApplicationEnum.PENDING_USER.getMessage()));
 		throw new KvpalException(ApplicationEnum.REG_SUCCESS);
 		}else
