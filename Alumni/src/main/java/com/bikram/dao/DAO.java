@@ -26,4 +26,7 @@ RoleBean getRoleById(int id);
 UserBean getUserByEmail(String email)throws KvpalException;
 MultipartFile createBadge(String sso,HttpServletRequest request)throws KvpalException;
 void setUserStatus(String sso,int userId)throws KvpalException ;
+long  createEvent(String sso,String name) throws KvpalException;
+void pushAttendant(String sso,String uuid,long eventId) throws KvpalException;
+UserBean getUserByUUID(String uuid);
 }

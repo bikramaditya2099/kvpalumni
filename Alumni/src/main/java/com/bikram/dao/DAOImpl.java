@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.bikram.beans.LoginBean;
+import com.bikram.dao.beans.AttendantBean;
+import com.bikram.dao.beans.EventBean;
 import com.bikram.dao.beans.RoleBean;
 import com.bikram.dao.beans.UserBean;
 import com.bikram.exception.ApplicationEnum;
@@ -25,6 +28,7 @@ import com.bikram.utility.EmailBodyGenerator;
 import com.bikram.utility.EmailClient;
 import com.bikram.utility.EmailEnum;
 import com.bikram.utility.Encryption;
+import com.bikram.utility.EventIdGenerator;
 import com.bikram.utility.HibernateUtil;
 import com.bikram.utility.TokenManager;
 import com.google.zxing.WriterException;
@@ -40,6 +44,8 @@ public class DAOImpl implements DAO{
 	private EmailClient emailclient;
 	@Autowired
 	private EmailBodyGenerator emailBodyGenerator;
+	@Autowired
+	private EventIdGenerator eventIdGenerator;
 	private static final String SUBJECT="no reply";
 	@Override
 	public void insertRole(RoleBean bean) {
@@ -246,8 +252,95 @@ public class DAOImpl implements DAO{
 			throw new KvpalException(ApplicationEnum.LOGIN_FAILED);
 		
 	}
+
+	@Override
+	public long createEvent(String sso,String name) throws KvpalException {
+		manager.getUserNameAndPasswordFromToken(sso);
+		UserBean userBean=getUserByEmail(manager.getUserName());
+		if(!userBean.getSso().equals(sso)){
+			throw new KvpalException(ApplicationEnum.TOKEN_EXPIRED);
+		}
+		if(encrypt.decrypt(manager.getPassword()).equals(encrypt.decrypt(userBean.getPassword()))){
+			if(userBean.getRole().getId()!=1)
+				throw new KvpalException(ApplicationEnum.NOT_ADMIN);
+			else{
+				Session session=HibernateUtil.getNewSession();
+				long eventId=eventIdGenerator.generate();
+				EventBean bean=new EventBean();
+				bean.setId(eventId);
+				bean.setName(name);
+				bean.setDate(new Date());
+				Transaction transaction=session.beginTransaction();
+				session.save(bean);
+				transaction.commit();
+				throw new KvpalException(ApplicationEnum.EVENT_CREATED_SUCCESSFULLY, bean.getId());
+				
+			}
+			
+		}
+		else
+			throw new KvpalException(ApplicationEnum.LOGIN_FAILED);
+	}
+
+	@Override
+	public void pushAttendant(String sso, String uuid, long eventId) throws KvpalException {
+		manager.getUserNameAndPasswordFromToken(sso);
+		UserBean userBean=getUserByEmail(manager.getUserName());
+		if(!userBean.getSso().equals(sso)){
+			throw new KvpalException(ApplicationEnum.TOKEN_EXPIRED);
+		}
+		if(encrypt.decrypt(manager.getPassword()).equals(encrypt.decrypt(userBean.getPassword()))){
+			if(userBean.getRole().getId()!=1)
+				throw new KvpalException(ApplicationEnum.NOT_ADMIN);
+			else{
+				Session session=HibernateUtil.getNewSession();
+				UserBean attendant=getUserByUUID(uuid);
+				EventBean eventBean=getEventById(eventId);
+				if(attendant!=null && eventBean!=null){
+					AttendantBean bean=new AttendantBean();
+					bean.setAddress(attendant.getAddress());
+					bean.setBatch(attendant.getBatch());
+					bean.setEmail(attendant.getEmail());
+					bean.setFirstName(attendant.getFirstName());
+					bean.setLastName(attendant.getLastName());
+					bean.setGender(attendant.getGender());
+					bean.setMobile(attendant.getMobile());
+					bean.setUid(attendant.getUid());
+					bean.setEvent(eventBean);
+					bean.setEventDate(new Date());
+					Transaction transaction=session.beginTransaction();
+					session.save(bean);
+					transaction.commit();
+					session.close();
+					throw new KvpalException(ApplicationEnum.ATTENDANT_ENTERED_SUCCESSFULLY);		
+				}
+				
+				
+			}
+			
+		}
+		else
+			throw new KvpalException(ApplicationEnum.LOGIN_FAILED);
+		
+	}
+
+	@Override
+	public UserBean getUserByUUID(String uuid) {
+		Session session=HibernateUtil.getNewSession();
+		Criteria criteria=session.createCriteria(UserBean.class);
+		criteria.add(Restrictions.eq("uid", uuid));
+		List<UserBean> userBeans=criteria.list();
+		if(userBeans.size()>0)
+			return userBeans.get(0);
+		else
+		return null;
+	}
 	
-	
+	public EventBean getEventById(long eventId){
+		Session session=HibernateUtil.getNewSession();
+		EventBean bean=(EventBean) session.get(EventBean.class, eventId);
+		return bean;
+	}
 	
 
 }

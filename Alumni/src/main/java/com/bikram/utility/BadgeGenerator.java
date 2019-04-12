@@ -147,7 +147,5 @@ public class BadgeGenerator {
 }
 	
 	public static void main(String[] args) throws IOException, WriterException {
-		//BadgeGenerator creator=new BadgeGenerator();
-		//creator.createImage("https://kvpal.s3.us-east-2.amazonaws.com/KVPAL1551424795061.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20190301T072004Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=AKIAIRCOTOE27IATBS5Q%2F20190301%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Signature=9c31f97cff1875b75584079d9e31d7e6564b7b6932263c4dc0a974ca78be1279");
-	}
+		}
 }

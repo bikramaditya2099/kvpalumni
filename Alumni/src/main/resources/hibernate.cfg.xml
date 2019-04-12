@@ -25,6 +25,10 @@
         <mapping class="com.bikram.dao.beans.RoleBean"/>
         <mapping class="com.bikram.dao.beans.FieldBean"/>
         <mapping class="com.bikram.dao.beans.UserBean"/>
+        <mapping class="com.bikram.dao.beans.EventBean"/>
+        <mapping class="com.bikram.dao.beans.AttendantBean"/>
+        
+        
         
         
     </session-factory>

@@ -12,6 +12,8 @@ public enum ApplicationEnum {
 	PENDING_USER(HttpStatus.OK,"Your Profile is under verification. Please wait at most 48 hours to get verified. You will recieve an email from us once your profile verification is done. ","SUCCESS","KVPAL1003"),
 	LOGOUT_SUCCESS(HttpStatus.OK,"You Logout Successfully","SUCCESS","KVPAL1004"),
 	USER_STATUS_SET_SUCCESSFULLY(HttpStatus.OK,"User status set successfully","SUCCESS","KVPAL1005"),
+	EVENT_CREATED_SUCCESSFULLY(HttpStatus.OK,"Event Created Successfully","SUCCESS","KVPAL1006"),
+	ATTENDANT_ENTERED_SUCCESSFULLY(HttpStatus.OK,"Attendant Entered Successfully","SUCCESS","KVPAL1007"),
 	
 	//ERROR HANDLERS
 	
